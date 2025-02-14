@@ -7,6 +7,8 @@ from pygame.key import get_pressed
 
 from icecream import ic
 
+import math
+
 from config.create_Objects import screen
 
 from config.sources.heroes.source import HEROES
@@ -28,11 +30,30 @@ class Player(Sprite):
         self.angle = 0
         self.rotation_speed = 10
         self.speed = 7
-
-        self.image = HEROES[0]
-        self.image_rotation = self.image.copy()
-        self.rect = self.image_rotation.get_rect(center=pos)
+        self.__post_init__()
         self.group.add(self)
+
+
+    def __post_init__(self):
+        self.image = HEROES[1]['angle'][0]['sprite']
+        self.image_rotation = self.image.copy()
+        self.rect = self.image_rotation.get_rect(center=self.pos)
+
+        self.prepare_weapon(0)
+
+
+    def prepare_weapon(self, angle):
+        self.pos_weapons = []
+        for value in HEROES[1]['angle'][angle]['weapon']:
+            self.pos_weapons.append(value)
+                # Vector2(
+                #     self.rect.centerx + value[0],
+                #     self.rect.centery + value[1]
+                #     )
+                # )
+
+
+
 
 
     def handle_event(self, event):
@@ -63,10 +84,25 @@ class Player(Sprite):
                         )
 
 
+    @property
+    def pos_weapons_rotation(self):
+        result = []
+        for weapon in self.pos_weapons:
+            newX, newY = self.vector_rotation(weapon, -self.angle / 180 * math.pi)
+            result.append(self.rect.centerx + newX, self.rect.centery + newY)
+        return result
+    
+
+    def vector_rotation(self, vector, angle):
+        vector = Vector2(vector)
+        return vector.rotate_rad(angle)
+    
+
     def rotation(self):
-        for value in HEROES:
+        for value in HEROES[1]['angle']:
             if self.angle <= value:
-                self.image = HEROES[value]
+                self.image = HEROES[1]['angle'][value]['sprite']
+                self.prepare_weapon(value)
                 break
 
         self.image_rotation = self.image.copy()
@@ -100,3 +136,8 @@ class Player(Sprite):
     def update(self):
         self.check_position()
         self.move()
+        
+        for value in self.pos_weapons_rotation:
+            value[0] += self.direction.x
+            value[1] += self.direction.y
+            

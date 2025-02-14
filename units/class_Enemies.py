@@ -40,7 +40,7 @@ class Enemies(Sprite):
 
 
     def __post_init__(self):
-        self.image = ENEMIES[0]
+        self.image = ENEMIES[1]['angle'][0]['sprite']
 
         self.pos = (
                     uniform(
@@ -74,9 +74,9 @@ class Enemies(Sprite):
         else:
             self.angle = 360 + angle_vector
 
-        for value in ENEMIES:
+        for value in ENEMIES[1]['angle']:
             if self.angle <= value:
-                self.image = ENEMIES[value]
+                self.image = ENEMIES[1]['angle'][value]['sprite']
                 break
 
         self.image_rotation = self.image.copy()

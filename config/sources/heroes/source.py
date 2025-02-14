@@ -5,7 +5,7 @@ from icecream import ic
 
 SCALE_VALUE = {
                 1: .25,
-               }
+                }
 
 
 HEROES = {
