@@ -61,7 +61,33 @@ class Enemies(Sprite):
         self.image_rotation = self.image.copy()
         self.rect = self.image_rotation.get_rect(center=self.pos)
         self.direction = Vector2(self.pos)
+        
+        self.prepare_weapon(0)
 
+
+    def prepare_weapon(self, angle):
+        self.pos_weapons = []
+        for value in ENEMIES[1]['angle'][angle]['weapons']:
+            self.pos_weapons.append(value)
+                # Vector2(
+                #     self.rect.centerx + value[0],
+                #     self.rect.centery + value[1]
+                #     )
+                # )
+                
+    
+    @property
+    def pos_weapons_rotation(self):
+        result = []
+        for weapon in self.pos_weapons:
+            newX, newY = self.vector_rotation(weapon, -self.angle / 180 * math.pi)
+            result.append([self.rect.centerx + newX, self.rect.centery + newY])
+        return result
+    
+    
+    def vector_rotation(self, vector, angle):
+        vector = Vector2(vector)
+        return vector.rotate_rad(angle)
 
 
     def rotation(self):
@@ -77,6 +103,7 @@ class Enemies(Sprite):
         for value in ENEMIES[1]['angle']:
             if self.angle <= value:
                 self.image = ENEMIES[1]['angle'][value]['sprite']
+                self.prepare_weapon(value)
                 break
 
         self.image_rotation = self.image.copy()
@@ -130,19 +157,23 @@ class Enemies(Sprite):
 
 
     def shot(self):
-        if randint(0, 100) == 50:
-            self.group.add(
-                            Shots(
-                                pos=self.rect.center,
-                                screen=screen,
-                                group=self.group,
-                                speed=10,
-                                angle=self.angle,
-                                kill_shot_distance=2000,
-                                shoter=self,
-                                color='yellow'
-                                )
-                            )
+        if Vector2(self.rect.center).distance_to(self.player.rect.center) <= self.shot_distance:
+            if self.player.first_shot and randint(0, 100) == 50:
+                for value in self.pos_weapons_rotation:
+                    self.group.add(
+                                    Shots(
+                                        pos=(value),
+                                        screen=screen,
+                                        group=self.group,
+                                        speed=10,
+                                        angle=self.angle,
+                                        kill_shot_distance=2000,
+                                        shoter=self,
+                                        color='yellow',
+                                        image='images/rockets/shot1.png',
+                                        scale_value=.08
+                                        )
+                                    )
 
 
 
@@ -152,3 +183,7 @@ class Enemies(Sprite):
         self.check_move_count()
         self.move()
         self.shot()
+
+        for value in self.pos_weapons_rotation:
+            value[0] += self.direction.x
+            value[1] += self.direction.y

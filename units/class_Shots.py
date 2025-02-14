@@ -13,14 +13,15 @@ class Shots(Sprite):
                 pos=(0, 0),
                 group=None,
                 screen=None,
-                size=(20, 5),
+                size=(20, 2),
                 color='white',
                 speed=0,
                 angle=0,
                 shoter=None,
                 kill_shot_distance=None,
                 image=None,
-                damage=None
+                damage=None,
+                scale_value = None
                 ):
         super().__init__(group)
 
@@ -31,8 +32,11 @@ class Shots(Sprite):
         self.damage = damage
         self.kill_shot_distance = kill_shot_distance
         self.old_shot_coordinate = Vector2(self.shoter.rect.center)
-        self.image = pg.Surface(size, pg.SRCALPHA)
-        self.image.fill(color)
+        if image:
+            self.image = scale_by(load(image).convert_alpha(), scale_value)
+        else:
+            self.image = pg.Surface(size, pg.SRCALPHA)
+            self.image.fill(color)
         self.image_rotation = rotozoom(self.image, self.angle, 1)
         self.rect = self.image_rotation.get_rect(center=pos)
         self.offset = Vector2().rotate(self.angle)

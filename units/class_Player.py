@@ -13,6 +13,7 @@ from config.create_Objects import screen
 
 from config.sources.heroes.source import HEROES
 from units.class_Shots import Shots
+from logic.class_FirstShot import FirstShot
 
 
 
@@ -30,6 +31,7 @@ class Player(Sprite):
         self.angle = 0
         self.rotation_speed = 10
         self.speed = 7
+        self.first_shot = FirstShot()
         self.__post_init__()
         self.group.add(self)
 
@@ -44,7 +46,7 @@ class Player(Sprite):
 
     def prepare_weapon(self, angle):
         self.pos_weapons = []
-        for value in HEROES[1]['angle'][angle]['weapon']:
+        for value in HEROES[1]['angle'][angle]['weapons']:
             self.pos_weapons.append(value)
                 # Vector2(
                 #     self.rect.centerx + value[0],
@@ -67,21 +69,26 @@ class Player(Sprite):
 
         if event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
+                if not self.first_shot:
+                    self.first_shot = not self.first_shot
                 self.shot()
 
 
     def shot(self):
-        self.group.add(
-                        Shots(
-                            pos=self.rect.center,
-                            screen=screen,
-                            group=self.group,
-                            speed=10,
-                            angle=self.angle,
-                            kill_shot_distance=2000,
-                            shoter=self
+        for value in self.pos_weapons_rotation:
+            self.group.add(
+                            Shots(
+                                pos=(value),
+                                screen=screen,
+                                group=self.group,
+                                speed=10,
+                                angle=self.angle,
+                                kill_shot_distance=2000,
+                                shoter=self,
+                                image='images/rockets/shot3.png',
+                                scale_value=.15
+                                )
                             )
-                        )
 
 
     @property
@@ -89,7 +96,7 @@ class Player(Sprite):
         result = []
         for weapon in self.pos_weapons:
             newX, newY = self.vector_rotation(weapon, -self.angle / 180 * math.pi)
-            result.append(self.rect.centerx + newX, self.rect.centery + newY)
+            result.append([self.rect.centerx + newX, self.rect.centery + newY])
         return result
     
 
