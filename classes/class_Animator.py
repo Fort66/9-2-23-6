@@ -96,8 +96,8 @@ class Animator:
                 self.frame_time = time()
                 self.update_frames()
 
-            if self.frame == len(self.frames) - 1:
-                self.loops -= 1
+                if self.frame == len(self.frames) - 1:
+                    self.loops -= 1
 
     def update_frames(self):
         if self.loops:

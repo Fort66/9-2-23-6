@@ -5,6 +5,8 @@ from classes.class_CheckEvents import CheckEvents
 from classes.class_CameraGroup import CameraGroup
 from units.class_Player import Player
 from units.class_Enemies import Enemies
+from classes.class_SpriteGroups import SpriteGroups
+from UI.screens.class_MiniMap import MiniMap
 
 
 class Game:
@@ -14,30 +16,16 @@ class Game:
         self.fps = 100
         self.check_events = CheckEvents(self)
         self.screen = screen
-        self.create_groups()
+        self.sprite_groups = SpriteGroups()
+        self.sprite_groups.camera_group = CameraGroup(self)
+        self.mini_map = MiniMap(scale_value=.2, color_map=(0, 100, 0, 150))
         self.setup()
 
-
     def setup(self):
-        self.player = Player(
-                            pos=(self.screen.rect.center),
-                            group=self.camera_group
-                            )
+        self.player = Player(pos=(self.screen.rect.center))
 
         for _ in range(10):
-            self.camera_group.add(
-                                Enemies(
-                                    group=self.camera_group,
-                                    player=self.player
-                                        )
-                                )
-
-
-
-    def create_groups(self):
-        self.camera_group = CameraGroup(self)
-
-
+            self.sprite_groups.camera_group.add(Enemies(player=self.player))
 
     def run_game(self):
         while self.run:
@@ -45,11 +33,9 @@ class Game:
 
             self.check_events.check_events()
 
+            self.sprite_groups.camera_group.update()
+            self.sprite_groups.camera_group.custom_draw(self.player)
 
-            self.camera_group.update()
-            self.camera_group.custom_draw(self.player)
-
-
-            self.screen.update_caption(f'{str(round(self.clock.get_fps(), 2))}')
+            self.screen.update_caption(f"{str(round(self.clock.get_fps(), 2))}")
             pg.display.update()
             self.clock.tick(self.fps)

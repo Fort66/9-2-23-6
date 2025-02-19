@@ -13,27 +13,27 @@ from config.create_Objects import screen
 
 from config.sources.heroes.source import HEROES
 from units.class_Shots import Shots
-from logic.class_FirstShot import FirstShot
 from units.class_Guardian import Guardian
+from classes.class_SpriteGroups import SpriteGroups
 
 
 class Player(Sprite):
     def __init__(
         self,
         pos=None,
-        group=None,
     ):
-        super().__init__(group)
+        self.sprite_groups = SpriteGroups()
+        super().__init__(self.sprite_groups.camera_group)
+        self.sprite_groups.camera_group.add(self)
+        self.sprite_groups.player_group.add(self)
 
         self.pos = pos
-        self.group = group
         self.direction = Vector2(pos)
         self.angle = 0
         self.rotation_speed = 10
         self.speed = 7
-        self.first_shot = FirstShot()
+        self.first_shot = False
         self.__post_init__()
-        self.group.add(self)
 
     def __post_init__(self):
         self.image = HEROES[1]["angle"][0]["sprite"]
@@ -79,11 +79,10 @@ class Player(Sprite):
 
     def shot(self):
         for value in self.pos_weapons_rotation:
-            self.group.add(
+            self.sprite_groups.camera_group.add(shot:=
                 Shots(
                     pos=(value),
                     screen=screen,
-                    group=self.group,
                     speed=10,
                     angle=self.angle,
                     kill_shot_distance=2000,
@@ -92,6 +91,7 @@ class Player(Sprite):
                     scale_value=0.15,
                 )
             )
+            self.sprite_groups.player_shot_group.add(shot)
 
     @property
     def pos_weapons_rotation(self):
@@ -117,14 +117,14 @@ class Player(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.rect.center)
 
     def check_position(self):
-        if self.rect.left < self.group.background_rect.left:
-            self.rect.left = self.group.background_rect.left
-        if self.rect.right > self.group.background_rect.right:
-            self.rect.right = self.group.background_rect.right
-        if self.rect.top < self.group.background_rect.top:
-            self.rect.top = self.group.background_rect.top
-        if self.rect.bottom > self.group.background_rect.bottom:
-            self.rect.bottom = self.group.background_rect.bottom
+        if self.rect.left < self.sprite_groups.camera_group.background_rect.left:
+            self.rect.left = self.sprite_groups.camera_group.background_rect.left
+        if self.rect.right > self.sprite_groups.camera_group.background_rect.right:
+            self.rect.right = self.sprite_groups.camera_group.background_rect.right
+        if self.rect.top < self.sprite_groups.camera_group.background_rect.top:
+            self.rect.top = self.sprite_groups.camera_group.background_rect.top
+        if self.rect.bottom > self.sprite_groups.camera_group.background_rect.bottom:
+            self.rect.bottom = self.sprite_groups.camera_group.background_rect.bottom
 
     def move(self):
         keys = get_pressed()

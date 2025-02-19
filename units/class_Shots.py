@@ -3,6 +3,7 @@ from pygame.sprite import Sprite
 from pygame.transform import rotozoom, scale_by
 from pygame.image import load
 from pygame.math import Vector2
+from classes.class_SpriteGroups import SpriteGroups
 
 
 from icecream import ic
@@ -11,7 +12,6 @@ class Shots(Sprite):
     def __init__(
                 self,
                 pos=(0, 0),
-                group=None,
                 screen=None,
                 size=(20, 2),
                 color='white',
@@ -23,10 +23,10 @@ class Shots(Sprite):
                 damage=None,
                 scale_value = None
                 ):
-        super().__init__(group)
+        self.sprite_groups = SpriteGroups()
+        super().__init__(self.sprite_groups.camera_group)
 
         self.screen = screen
-        self.group = group
         self.angle = angle
         self.shoter = shoter
         self.damage = damage
