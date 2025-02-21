@@ -58,7 +58,7 @@ class Enemies(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.pos)
         self.direction = Vector2(self.pos)
 
-        self.shield = Guardian(
+        self.sprite_groups.enemies_group.add(shield := Guardian(
             dir_path="images/guards/guard2",
             speed_frames=0.09,
             obj_rect=self.rect,
@@ -66,7 +66,9 @@ class Enemies(Sprite):
             loops=-1,
             guard_level=randint(3, 10),
             pos=self.rect.center,
-        )
+            obj=self
+        ))
+        self.sprite_groups.enemies_guard_group.add(shield)
 
         self.prepare_weapon(0)
 
@@ -186,9 +188,6 @@ class Enemies(Sprite):
         self.check_move_count()
         self.move()
         self.shot()
-
-        if hasattr(self, "shield"):
-            self.shield.animate(self.rect)
 
         for value in self.pos_weapons_rotation:
             value[0] += self.direction.x
