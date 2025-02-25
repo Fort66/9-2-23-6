@@ -9,7 +9,11 @@ from icecream import ic
 
 import math
 
-from config.create_Objects import screen
+from config.create_Objects import (
+    screen,
+    checks,
+    weapons,
+    )
 
 from config.sources.heroes.source import HEROES
 from units.class_Shots import Shots
@@ -43,26 +47,17 @@ class Player(Sprite):
         self.sprite_groups.camera_group.add(shield := Guardian(
             dir_path="images/guards/guard1",
             speed_frames=0.09,
-            obj_rect=self.rect,
             scale_value=(1, 1),
             loops=-1,
             guard_level=10,
-            pos=self.rect.center,
-            obj=self
+            size=self.rect.size,
+            obj=self,
+            angle=self.angle
         ))
         self.sprite_groups.player_guard_group.add(shield)
 
         self.prepare_weapon(0)
 
-    def prepare_weapon(self, angle):
-        self.pos_weapons = []
-        for value in HEROES[1]["angle"][angle]["weapons"]:
-            self.pos_weapons.append(value)
-            # Vector2(
-            #     self.rect.centerx + value[0],
-            #     self.rect.centery + value[1]
-            #     )
-            # )
 
     def handle_event(self, event):
         if event.type == MOUSEWHEEL:
@@ -80,10 +75,11 @@ class Player(Sprite):
                 self.shot()
 
     def shot(self):
-        for value in self.pos_weapons_rotation:
+        value = self.pos_weapons_rotation()
+        for pos in value:
             self.sprite_groups.camera_group.add(shot:=
                 Shots(
-                    pos=(value),
+                    pos=(pos),
                     screen=screen,
                     speed=10,
                     angle=self.angle,
@@ -95,17 +91,11 @@ class Player(Sprite):
             )
             self.sprite_groups.player_shot_group.add(shot)
 
-    @property
-    def pos_weapons_rotation(self):
-        result = []
-        for weapon in self.pos_weapons:
-            newX, newY = self.vector_rotation(weapon, -self.angle / 180 * math.pi)
-            result.append([self.rect.centerx + newX, self.rect.centery + newY])
-        return result
+    def prepare_weapon(self, angle):
+        weapons.load_weapons(obj=self, source=HEROES[1]["angle"][angle]["weapons"], angle=angle)
 
-    def vector_rotation(self, vector, angle):
-        vector = Vector2(vector)
-        return vector.rotate_rad(angle)
+    def pos_weapons_rotation(self):
+        return weapons.pos_rotation(obj=self, angle=self.angle)
 
     def rotation(self):
         for value in HEROES[1]["angle"]:
@@ -119,14 +109,7 @@ class Player(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.rect.center)
 
     def check_position(self):
-        if self.rect.left < self.sprite_groups.camera_group.background_rect.left:
-            self.rect.left = self.sprite_groups.camera_group.background_rect.left
-        if self.rect.right > self.sprite_groups.camera_group.background_rect.right:
-            self.rect.right = self.sprite_groups.camera_group.background_rect.right
-        if self.rect.top < self.sprite_groups.camera_group.background_rect.top:
-            self.rect.top = self.sprite_groups.camera_group.background_rect.top
-        if self.rect.bottom > self.sprite_groups.camera_group.background_rect.bottom:
-            self.rect.bottom = self.sprite_groups.camera_group.background_rect.bottom
+        checks.position(self, self.sprite_groups.camera_group.background_rect)
 
     def move(self):
         keys = get_pressed()
@@ -143,6 +126,4 @@ class Player(Sprite):
         self.check_position()
         self.move()
 
-        for value in self.pos_weapons_rotation:
-            value[0] += self.direction.x
-            value[1] += self.direction.y
+        weapons.update_weapons(self, self.angle)

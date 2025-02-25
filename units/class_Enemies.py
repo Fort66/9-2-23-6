@@ -8,7 +8,11 @@ import math
 
 from icecream import ic
 
-from config.create_Objects import screen
+from config.create_Objects import (
+    screen,
+    checks,
+    weapons,
+    )
 
 from config.sources.enemies.source import ENEMIES
 from units.class_Shots import Shots
@@ -24,7 +28,6 @@ class Enemies(Sprite):
         self.sprite_groups = SpriteGroups()
         super().__init__(self.sprite_groups.camera_group)
         self.sprite_groups.enemies_group.add(self)
-        
 
         self.player = player
         self.angle = 0
@@ -61,38 +64,22 @@ class Enemies(Sprite):
         self.sprite_groups.enemies_group.add(shield := Guardian(
             dir_path="images/guards/guard2",
             speed_frames=0.09,
-            obj_rect=self.rect,
             scale_value=(1, 1),
             loops=-1,
             guard_level=randint(3, 10),
-            pos=self.rect.center,
-            obj=self
+            size=self.rect.size,
+            obj=self,
+            angle=self.angle,
         ))
         self.sprite_groups.enemies_guard_group.add(shield)
 
         self.prepare_weapon(0)
 
     def prepare_weapon(self, angle):
-        self.pos_weapons = []
-        for value in ENEMIES[1]["angle"][angle]["weapons"]:
-            self.pos_weapons.append(value)
-            # Vector2(
-            #     self.rect.centerx + value[0],
-            #     self.rect.centery + value[1]
-            #     )
-            # )
+        weapons.load_weapons(obj=self, source=ENEMIES[1]["angle"][angle]["weapons"], angle=angle)
 
-    @property
     def pos_weapons_rotation(self):
-        result = []
-        for weapon in self.pos_weapons:
-            newX, newY = self.vector_rotation(weapon, -self.angle / 180 * math.pi)
-            result.append([self.rect.centerx + newX, self.rect.centery + newY])
-        return result
-
-    def vector_rotation(self, vector, angle):
-        vector = Vector2(vector)
-        return vector.rotate_rad(angle)
+        return weapons.pos_rotation(obj=self, angle=self.angle)
 
     def rotation(self):
         rotateX = self.player.rect.centerx - self.rect.centerx
@@ -130,17 +117,8 @@ class Enemies(Sprite):
         self.moveY = choice(self.direction_list)
 
     def check_position(self):
-        if self.rect.left < self.sprite_groups.camera_group.background_rect.left:
-            self.rect.left = self.sprite_groups.camera_group.background_rect.left
-            self.change_direction()
-        if self.rect.right > self.sprite_groups.camera_group.background_rect.right:
-            self.rect.right = self.sprite_groups.camera_group.background_rect.right
-            self.change_direction()
-        if self.rect.top < self.sprite_groups.camera_group.background_rect.top:
-            self.rect.top = self.sprite_groups.camera_group.background_rect.top
-            self.change_direction()
-        if self.rect.bottom > self.sprite_groups.camera_group.background_rect.bottom:
-            self.rect.bottom = self.sprite_groups.camera_group.background_rect.bottom
+        checks.position(self, self.sprite_groups.camera_group.background_rect)
+        if not checks.resolved_move:
             self.change_direction()
 
         if not self.is_min_distance:
@@ -166,10 +144,11 @@ class Enemies(Sprite):
             <= self.shot_distance
         ):
             if self.player.first_shot and randint(0, 100) == 50:
-                for value in self.pos_weapons_rotation:
+                value = self.pos_weapons_rotation()
+                for pos in value:
                     self.sprite_groups.camera_group.add(shot:=
                         Shots(
-                            pos=(value),
+                            pos=(pos),
                             screen=screen,
                             speed=10,
                             angle=self.angle,
@@ -189,6 +168,4 @@ class Enemies(Sprite):
         self.move()
         self.shot()
 
-        for value in self.pos_weapons_rotation:
-            value[0] += self.direction.x
-            value[1] += self.direction.y
+        weapons.update_weapons(self, self.angle)
