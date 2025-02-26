@@ -3,7 +3,11 @@ from pygame.transform import rotozoom
 
 from time import time
 from classes.class_Animator import Animator
-
+from functions.function_guards_collision import (
+    player_guard_collision,
+    enemies_guard_collision,
+    guards_collision
+    )
 
 
 class Guardian(Animator, Sprite):
@@ -40,9 +44,18 @@ class Guardian(Animator, Sprite):
 
 
     def update(self):
+        player_guard_collision()
+        enemies_guard_collision()
+        guards_collision()
+
         self.angle = self.obj.angle
         self.rect.center = self.obj.rect.center
         self.image_rotation = self.frames[self.frame][0]
         self.image_rotation = rotozoom(self.image_rotation, self.angle, 1)
         self.rect = self.image_rotation.get_rect(center=self.rect.center)
         super().animate()
+
+        if guards_collision():
+            if self.destruction_time <= 0:
+                self.destruction_time = time()
+

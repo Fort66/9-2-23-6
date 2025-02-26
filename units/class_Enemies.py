@@ -18,6 +18,7 @@ from config.sources.enemies.source import ENEMIES
 from units.class_Shots import Shots
 from units.class_Guardian import Guardian
 from classes.class_SpriteGroups import SpriteGroups
+from functions.function_enemies_collision import enemies_collision
 
 
 from random import randint, choice, uniform
@@ -171,3 +172,4 @@ class Enemies(Sprite):
         self.shot()
 
         weapons.update_weapons(self, self.angle)
+        enemies_collision()

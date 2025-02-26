@@ -20,6 +20,8 @@ from units.class_Shots import Shots
 from units.class_Guardian import Guardian
 from classes.class_SpriteGroups import SpriteGroups
 
+from functions.function_player_collision import player_collision
+
 
 class Player(Sprite):
     def __init__(
@@ -129,3 +131,4 @@ class Player(Sprite):
         self.move()
 
         weapons.update_weapons(self, self.angle)
+        player_collision()
