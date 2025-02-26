@@ -5,6 +5,12 @@ from pygame.image import load
 from pygame.math import Vector2
 from classes.class_SpriteGroups import SpriteGroups
 
+from functions.function_shots_collision import (
+    player_guard_collision,
+    enemies_guard_collision,
+    shots_collision
+    )
+
 
 from icecream import ic
 
@@ -60,5 +66,8 @@ class Shots(Sprite):
     def update(self):
         self.check_position()
         self.move()
+        player_guard_collision(self)
+        enemies_guard_collision(self)
+        shots_collision(self)
 
 
