@@ -70,6 +70,7 @@ class Enemies(Sprite):
             size=self.rect.size,
             obj=self,
             angle=self.angle,
+            owner=self
         ))
         self.sprite_groups.enemies_guard_group.add(shield)
 
@@ -157,6 +158,7 @@ class Enemies(Sprite):
                             color="yellow",
                             image="images/rockets/shot1.png",
                             scale_value=0.08,
+                            owner=self
                         )
                     )
                     self.sprite_groups.enemies_shot_group.add(shot)
@@ -165,7 +167,7 @@ class Enemies(Sprite):
         self.check_position()
         self.rotation()
         self.check_move_count()
-        self.move()
+        # self.move()
         self.shot()
 
         weapons.update_weapons(self, self.angle)

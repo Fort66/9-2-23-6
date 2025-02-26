@@ -61,11 +61,9 @@ class Animator:
 
         self.frames = self.original_frames.copy()
         self.image_rotation = self.frames[self.frame][0]
-        self.rect = self.image_rotation.get_rect()
+
 
     def animate(self):
-        self.size = self.image_rotation.get_rect() #TODO: fix this
-
         if self.frame_time == 0:
             self.frame_time = time()
 

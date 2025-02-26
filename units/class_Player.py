@@ -52,7 +52,8 @@ class Player(Sprite):
             guard_level=10,
             size=self.rect.size,
             obj=self,
-            angle=self.angle
+            angle=self.angle,
+            owner=self
         ))
         self.sprite_groups.player_guard_group.add(shield)
 
@@ -87,6 +88,7 @@ class Player(Sprite):
                     shoter=self,
                     image="images/rockets/shot3.png",
                     scale_value=0.15,
+                    owner=self
                 )
             )
             self.sprite_groups.player_shot_group.add(shot)

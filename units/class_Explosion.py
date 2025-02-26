@@ -6,18 +6,16 @@ from classes.class_Animator import Animator
 
 
 
-class Guardian(Animator, Sprite):
+class Explosion(Animator, Sprite):
     def __init__(
         self,
         dir_path=None,
         speed_frames=None,
         obj=None,
-        guard_level=None,
         scale_value=None,
         loops=None,
         size=None,
-        angle=None,
-        owner=None
+        angle=None
     ):
 
         super().__init__(
@@ -28,21 +26,16 @@ class Guardian(Animator, Sprite):
             size=size,
         )
 
-        self.guard_level = guard_level
         self.obj = obj
         self.angle = angle
-        self.destruction_time = 0
         self.rect = self.image_rotation.get_rect(center=self.obj.rect.center)
 
-    def decrease_level(self, value):
-        if self.guard_level > 0:
-            self.guard_level -= value
-
-
     def update(self):
-        self.angle = self.obj.angle
-        self.rect.center = self.obj.rect.center
-        self.image_rotation = self.frames[self.frame][0]
-        self.image_rotation = rotozoom(self.image_rotation, self.angle, 1)
-        self.rect = self.image_rotation.get_rect(center=self.rect.center)
-        super().animate()
+        if self.loops > 0:
+            self.angle = self.obj.angle
+            self.image_rotation = self.frames[self.frame][0]
+            self.image_rotation = rotozoom(self.image_rotation, self.angle, 1)
+            self.rect = self.image_rotation.get_rect(center=self.rect.center)
+            super().animate()
+        else:
+            self.kill()

@@ -21,7 +21,8 @@ class Shots(Sprite):
                 kill_shot_distance=None,
                 image=None,
                 damage=None,
-                scale_value = None
+                scale_value = None,
+                owner=None
                 ):
         self.sprite_groups = SpriteGroups()
         super().__init__(self.sprite_groups.camera_group)
@@ -30,6 +31,7 @@ class Shots(Sprite):
         self.angle = angle
         self.shoter = shoter
         self.damage = damage
+        self.owner = owner
         self.kill_shot_distance = kill_shot_distance
         self.old_shot_coordinate = Vector2(self.shoter.rect.center)
         if image:
