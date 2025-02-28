@@ -18,7 +18,7 @@ class Game:
         self.screen = screen
         self.sprite_groups = SpriteGroups()
         self.sprite_groups.camera_group = CameraGroup(self)
-        self.mini_map = MiniMap(scale_value=.15, color_map=(0, 100, 0, 150))
+        self.mini_map = MiniMap(scale_value=.1, color_map=(0, 100, 0, 150))
         self.setup()
 
     def setup(self):
