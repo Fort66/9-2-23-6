@@ -8,7 +8,8 @@ from classes.class_SpriteGroups import SpriteGroups
 from functions.function_shots_collision import (
     player_guard_collision,
     enemies_guard_collision,
-    shots_collision
+    shots_collision,
+    distance_collision
     )
 
 
@@ -55,6 +56,7 @@ class Shots(Sprite):
 
     def check_position(self):
         if Vector2(self.rect.center).distance_to(self.old_shot_coordinate) > self.kill_shot_distance:
+            distance_collision(self)
             self.kill()
 
 

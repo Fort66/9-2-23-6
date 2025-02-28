@@ -7,6 +7,7 @@ from pygame.key import get_pressed
 import math
 
 from icecream import ic
+from time import time
 
 from config.create_Objects import (
     screen,
@@ -37,6 +38,8 @@ class Enemies(Sprite):
         self.min_distance = 300
         self.shot_distance = 1500
         self.is_min_distance = False
+        self.shot_time = 0
+        self.hp = 2
         self.__post_init__()
 
 
@@ -104,9 +107,10 @@ class Enemies(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.rect.center)
 
     def random_value(self):
-        self.speed = randint(0, 10)
+        self.speed = randint(0, 5)
         self.direction_list = [0, 1, -1]
         self.move_count = randint(0, 600)
+        self.permission_shot = uniform(1, 3)
 
     def check_move_count(self):
         if self.move_count <= 0:
@@ -145,30 +149,40 @@ class Enemies(Sprite):
             Vector2(self.rect.center).distance_to(self.player.rect.center)
             <= self.shot_distance
         ):
-            if self.player.first_shot and randint(0, 100) == 50:
-                value = self.pos_weapons_rotation()
-                for pos in value:
-                    self.sprite_groups.camera_group.add(shot:=
-                        Shots(
-                            pos=(pos),
-                            screen=screen,
-                            speed=10,
-                            angle=self.angle,
-                            kill_shot_distance=2000,
-                            shoter=self,
-                            color="yellow",
-                            image="images/rockets/shot1.png",
-                            scale_value=0.08,
-                            owner=self
+            if self.player.first_shot:
+                if self.shot_time == 0:
+                    self.shot_time = time()
+                if time() - self.shot_time >= self.permission_shot:
+                    value = self.pos_weapons_rotation()
+                    for pos in value:
+                        self.sprite_groups.camera_group.add(shot:=
+                            Shots(
+                                pos=(pos),
+                                screen=screen,
+                                speed=8,
+                                angle=self.angle,
+                                kill_shot_distance=2000,
+                                shoter=self,
+                                color="yellow",
+                                image="images/rockets/shot1.png",
+                                scale_value=0.08,
+                                owner=self
+                            )
                         )
-                    )
-                    self.sprite_groups.enemies_shot_group.add(shot)
+                        self.sprite_groups.enemies_shot_group.add(shot)
+                        self.shot_time = time()
+
+    def decrease_hp(self, value):
+        if self.hp > 0:
+            self.hp -= value
+        if self.hp <= 0:
+            self.kill()
 
     def update(self):
         self.check_position()
         self.rotation()
         self.check_move_count()
-        # self.move()
+        self.move()
         self.shot()
 
         weapons.update_weapons(self, self.angle)

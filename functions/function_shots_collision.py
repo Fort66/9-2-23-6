@@ -60,3 +60,25 @@ def shots_collision(self):
             angle=self.angle,
         )
         hit_value.kill()
+
+
+def distance_collision(self):
+    if self in sprite_groups.player_shot_group:
+        explosion = Explosion(
+            dir_path="images/explosions/pulsar",
+            speed_frames=0.01,
+            scale_value=(0.25, 0.25),
+            loops=1,
+            obj=self,
+            angle=self.angle
+        )
+
+    if self in sprite_groups.enemies_shot_group:
+        explosion = Explosion(
+            dir_path="images/explosions/rocket1_expl",
+            speed_frames=0.01,
+            scale_value=(0.5, 0.5),
+            loops=1,
+            obj=self,
+            angle=self.angle,
+        )

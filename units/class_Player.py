@@ -8,6 +8,7 @@ from pygame.key import get_pressed
 from icecream import ic
 
 import math
+from time import time
 
 from config.create_Objects import (
     screen,
@@ -37,8 +38,11 @@ class Player(Sprite):
         self.direction = Vector2(pos)
         self.angle = 0
         self.rotation_speed = 10
-        self.speed = 7
+        self.speed = 5
+        self.shot_time = 1
+        self.permission_shot = .25
         self.first_shot = False
+        self.hp = 5
         self.__post_init__()
 
     def __post_init__(self):
@@ -75,7 +79,11 @@ class Player(Sprite):
             if event.button == 1:
                 if not self.first_shot:
                     self.first_shot = not self.first_shot
-                self.shot()
+                if self.shot_time == 0:
+                    self.shot_time = time()
+                if time() - self.shot_time >= self.permission_shot:
+                    self.shot()
+                    self.shot_time = time()
 
     def shot(self):
         value = self.pos_weapons_rotation()
@@ -84,7 +92,7 @@ class Player(Sprite):
                 Shots(
                     pos=(pos),
                     screen=screen,
-                    speed=10,
+                    speed=8,
                     angle=self.angle,
                     kill_shot_distance=2000,
                     shoter=self,
@@ -125,6 +133,12 @@ class Player(Sprite):
             self.rect.move_ip(0, -self.speed)
         if keys[K_s]:
             self.rect.move_ip(0, self.speed)
+
+    def decrease_hp(self, value):
+        if self.hp > 0:
+            self.hp -= value
+        if self.hp <= 0:
+            self.kill()
 
     def update(self):
         self.check_position()

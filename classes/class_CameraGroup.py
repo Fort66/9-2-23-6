@@ -7,7 +7,7 @@ from pygame.math import Vector2
 
 pg.init()
 
-back = "images/backgrounds/back6.jpg"
+back = "images/back/1.jpg"
 
 
 class CameraGroup(Group):
