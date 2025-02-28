@@ -1,6 +1,7 @@
 from UI.screens.class_ScreenGame import ScreenGame
 from logic.class_Checks import Checks
 from config.sources.class_Weapons import Weapons
+from logic.class_LevelsGame import LevelsGame
 
 screen = ScreenGame(
                     size=(1280, 720),
@@ -13,3 +14,4 @@ screen = ScreenGame(
 
 checks = Checks()
 weapons = Weapons()
+levels_game = LevelsGame()

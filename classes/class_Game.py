@@ -1,6 +1,6 @@
 import pygame as pg
 
-from config.create_Objects import screen
+from config.create_Objects import screen, levels_game
 from classes.class_CheckEvents import CheckEvents
 from classes.class_CameraGroup import CameraGroup
 from units.class_Player import Player
@@ -18,14 +18,24 @@ class Game:
         self.screen = screen
         self.sprite_groups = SpriteGroups()
         self.sprite_groups.camera_group = CameraGroup(self)
-        self.mini_map = MiniMap(scale_value=.1, color_map=(0, 100, 0, 150))
+        self.mini_map = MiniMap(scale_value=0.1, color_map=(0, 100, 0, 150))
         self.setup()
 
     def setup(self):
         self.player = Player(pos=(self.screen.rect.center))
 
-        for _ in range(5):
+        for _ in range(levels_game.enemies_attack):
             self.sprite_groups.camera_group.add(Enemies(player=self.player))
+
+    def clear_player_group(self):
+        self.sprite_groups.player_group.empty()
+        self.sprite_groups.player_shot_group.empty()
+        self.sprite_groups.player_guard_group.empty()
+
+    def clear_enemies_group(self):
+        self.sprite_groups.enemies_group.empty()
+        self.sprite_groups.enemies_shot_group.empty()
+        self.sprite_groups.enemies_guard_group.empty()
 
     def run_game(self):
         while self.run:
