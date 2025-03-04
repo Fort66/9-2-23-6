@@ -16,12 +16,19 @@ from config.create_Objects import (
     weapons,
     )
 
-from config.sources.heroes.source import HEROES
 from units.class_Shots import Shots
 from units.class_Guardian import Guardian
 from classes.class_SpriteGroups import SpriteGroups
 
 from functions.function_player_collision import player_collision
+from functions.function_load_source import load_python_file_source
+
+HERO = load_python_file_source(
+    dir_path='config.sources.heroes',
+    module_name='source',
+    level=1,
+    name_source='HERO'
+)
 
 
 class Player(Sprite):
@@ -37,16 +44,16 @@ class Player(Sprite):
         self.pos = pos
         self.direction = Vector2(pos)
         self.angle = 0
-        self.rotation_speed = 10
-        self.speed = 5
+        self.rotation_speed = HERO['rotation_speed']
+        self.speed = HERO['speed']
         self.shot_time = 1
-        self.permission_shot = .25
+        self.permission_shot = HERO['permission_shot']
         self.first_shot = False
-        self.hp = 5
+        self.hp = HERO['hp']
         self.__post_init__()
 
     def __post_init__(self):
-        self.image = HEROES[1]["angle"][0]["sprite"]
+        self.image = HERO["angle"][0]["sprite"]
         self.image_rotation = self.image.copy()
         self.rect = self.image_rotation.get_rect(center=self.pos)
 
@@ -57,7 +64,6 @@ class Player(Sprite):
             loops=-1,
             guard_level=10,
             size=self.rect.size,
-            obj=self,
             angle=self.angle,
             owner=self
         ))
@@ -95,7 +101,6 @@ class Player(Sprite):
                     speed=8,
                     angle=self.angle,
                     kill_shot_distance=2000,
-                    shoter=self,
                     image="images/rockets/shot3.png",
                     scale_value=0.15,
                     owner=self
@@ -104,15 +109,15 @@ class Player(Sprite):
             self.sprite_groups.player_shot_group.add(shot)
 
     def prepare_weapon(self, angle):
-        weapons.load_weapons(obj=self, source=HEROES[1]["angle"][angle]["weapons"], angle=angle)
+        weapons.load_weapons(obj=self, source=HERO["angle"][angle]["weapons"], angle=angle)
 
     def pos_weapons_rotation(self):
         return weapons.pos_rotation(obj=self, angle=self.angle)
 
     def rotation(self):
-        for value in HEROES[1]["angle"]:
+        for value in HERO["angle"]:
             if self.angle <= value:
-                self.image = HEROES[1]["angle"][value]["sprite"]
+                self.image = HERO["angle"][value]["sprite"]
                 self.prepare_weapon(value)
                 break
 

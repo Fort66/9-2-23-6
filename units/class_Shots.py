@@ -24,7 +24,6 @@ class Shots(Sprite):
                 color='white',
                 speed=0,
                 angle=0,
-                shoter=None,
                 kill_shot_distance=None,
                 image=None,
                 damage=None,
@@ -36,11 +35,10 @@ class Shots(Sprite):
 
         self.screen = screen
         self.angle = angle
-        self.shoter = shoter
         self.damage = damage
         self.owner = owner
         self.kill_shot_distance = kill_shot_distance
-        self.old_shot_coordinate = Vector2(self.shoter.rect.center)
+        self.old_shot_coordinate = Vector2(self.owner.rect.center)
         if image:
             self.image = scale_by(load(image).convert_alpha(), scale_value)
         else:

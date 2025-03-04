@@ -21,9 +21,11 @@ class Animator:
         scale_value=None,
         loops=None,
         size=None,
+        no_group=False
     ):
-        self.sprite_groups = SpriteGroups()
-        super().__init__(self.sprite_groups.camera_group)
+        if not no_group:
+            self.sprite_groups = SpriteGroups()
+            super().__init__(self.sprite_groups.camera_group)
 
         self.dir_path = dir_path
         self.speed_frames = speed_frames
@@ -72,7 +74,7 @@ class Animator:
                 self.frame = self.frame + 1 if self.frame < len(self.frames) - 1 else 0
             else:
                 if self.loops > 0:
-                    self.frame = self.frame + 1 if self.frame < len(self.frames) - 1 else self.frames[-1]
+                    self.frame = self.frame + 1 if self.frame < len(self.frames) - 1 else 0
                     if self.frame == len(self.frames) - 1:
                         self.loops -= 1
             self.frame_time = time()

@@ -15,14 +15,23 @@ from config.create_Objects import (
     weapons,
     )
 
-from config.sources.enemies.source import ENEMIES
 from units.class_Shots import Shots
 from units.class_Guardian import Guardian
 from classes.class_SpriteGroups import SpriteGroups
 from functions.function_enemies_collision import enemies_collision
 
+from functions.function_load_source import load_python_file_source
 
 from random import randint, choice, uniform
+
+ENEMY = load_python_file_source(
+    dir_path='config.sources.enemies',
+    module_name='source',
+    level=1,
+    name_source='ENEMY'
+)
+
+
 
 
 class Enemies(Sprite):
@@ -44,7 +53,7 @@ class Enemies(Sprite):
 
 
     def __post_init__(self):
-        self.image = ENEMIES[1]["angle"][0]["sprite"]
+        self.image = ENEMY["angle"][0]["sprite"]
 
         self.pos = (
             uniform(
@@ -65,14 +74,13 @@ class Enemies(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.pos)
         self.direction = Vector2(self.pos)
 
-        self.sprite_groups.enemies_group.add(shield := Guardian(
+        self.sprite_groups.camera_group.add(shield := Guardian(
             dir_path="images/guards/guard2",
             speed_frames=0.09,
             scale_value=(1, 1),
             loops=-1,
             guard_level=randint(3, 10),
             size=self.rect.size,
-            obj=self,
             angle=self.angle,
             owner=self
         ))
@@ -81,7 +89,7 @@ class Enemies(Sprite):
         self.prepare_weapon(0)
 
     def prepare_weapon(self, angle):
-        weapons.load_weapons(obj=self, source=ENEMIES[1]["angle"][angle]["weapons"], angle=angle)
+        weapons.load_weapons(obj=self, source=ENEMY["angle"][angle]["weapons"], angle=angle)
 
     def pos_weapons_rotation(self):
         return weapons.pos_rotation(obj=self, angle=self.angle)
@@ -96,9 +104,9 @@ class Enemies(Sprite):
         else:
             self.angle = 360 + angle_vector
 
-        for value in ENEMIES[1]["angle"]:
+        for value in ENEMY["angle"]:
             if self.angle <= value:
-                self.image = ENEMIES[1]["angle"][value]["sprite"]
+                self.image = ENEMY["angle"][value]["sprite"]
                 self.prepare_weapon(value)
                 break
 
@@ -126,6 +134,7 @@ class Enemies(Sprite):
         checks.position(self, self.sprite_groups.camera_group.background_rect)
         if not checks.resolved_move:
             self.change_direction()
+            checks.resolved_move = True
 
         if not self.is_min_distance:
             if (
@@ -162,7 +171,6 @@ class Enemies(Sprite):
                                 speed=8,
                                 angle=self.angle,
                                 kill_shot_distance=2000,
-                                shoter=self,
                                 color="yellow",
                                 image="images/rockets/shot1.png",
                                 scale_value=0.08,
@@ -185,5 +193,5 @@ class Enemies(Sprite):
         self.move()
         self.shot()
 
-        weapons.update_weapons(self, self.angle)
         enemies_collision()
+        weapons.update_weapons(self, self.angle)

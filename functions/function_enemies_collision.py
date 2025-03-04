@@ -15,14 +15,14 @@ def enemies_collision():
         False,
         True
     )
-    
+
     if object_collision:
         lot_hits = len(list(object_collision.values())[0])
         hits = list(object_collision.keys())[0]
-        
+
         if hits.hp > 0:
             hits.decrease_hp(lot_hits)
-        
+
         if hits.hp <= 0:
             explosion = Explosion(
                 dir_path='images/explosions/ship1_expl',
@@ -32,4 +32,6 @@ def enemies_collision():
                 obj=hits,
                 angle=hits.angle
                 )
+            if not explosion:
+                hits.kill()
 
