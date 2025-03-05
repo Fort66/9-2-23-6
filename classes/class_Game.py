@@ -64,6 +64,15 @@ class Game:
 
             self.check_events.check_events()
 
+            if len(self.sprite_groups.enemies_group) == 0:
+                levels_game.attack_min += 1
+                levels_game.current_level += 1
+                self.sprite_groups.camera_group.set_background()
+                self.clear_enemies_group()
+                self.clear_player_group()
+                levels_game.update_levels()
+                self.setup()
+
             self.check_screen_size()
             self.back_animate.update()
             self.sprite_groups.camera_group.update()

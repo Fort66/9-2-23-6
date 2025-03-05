@@ -47,7 +47,7 @@ def shots_collision(self):
         sprite_groups.player_shot_group,
         sprite_groups.enemies_shot_group,
         dokilla=True,
-        dokillb=False,
+        dokillb=True,
     )
     if object_collide:
         hit_value = list(object_collide.values())[0][0]
@@ -59,7 +59,7 @@ def shots_collision(self):
             obj=self,
             angle=self.angle,
         )
-        hit_value.kill()
+
 
 
 def distance_collision(self):

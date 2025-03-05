@@ -57,16 +57,14 @@ class Player(Sprite):
         self.image_rotation = self.image.copy()
         self.rect = self.image_rotation.get_rect(center=self.pos)
 
-        self.sprite_groups.camera_group.add(shield := Guardian(
-            dir_path="images/guards/guard1",
-            speed_frames=0.09,
-            scale_value=(1, 1),
-            loops=-1,
-            guard_level=10,
-            size=self.rect.size,
-            angle=self.angle,
-            owner=self
-        ))
+        self.sprite_groups.camera_group.add(
+            shield := Guardian(
+                types=1,
+                size=self.rect.size,
+                angle=self.angle,
+                owner=self
+                )
+            )
         self.sprite_groups.player_guard_group.add(shield)
 
         self.prepare_weapon(0)
@@ -96,13 +94,9 @@ class Player(Sprite):
         for pos in value:
             self.sprite_groups.camera_group.add(shot:=
                 Shots(
-                    pos=(pos),
-                    screen=screen,
-                    speed=8,
+                    types=2,
                     angle=self.angle,
-                    kill_shot_distance=2000,
-                    image="images/rockets/shot3.png",
-                    scale_value=0.15,
+                    pos=(pos),
                     owner=self
                 )
             )

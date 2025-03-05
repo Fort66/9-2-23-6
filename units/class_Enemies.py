@@ -42,13 +42,12 @@ class Enemies(Sprite):
 
         self.player = player
         self.angle = 0
-        self.rotation_speed = 10
         self.shots = False
-        self.min_distance = 300
-        self.shot_distance = 1500
+        self.min_distance = ENEMY['min_distance']
+        self.shot_distance = ENEMY['shot_distance']
         self.is_min_distance = False
         self.shot_time = 0
-        self.hp = 2
+        self.hp = ENEMY['hp']
         self.__post_init__()
 
 
@@ -74,16 +73,14 @@ class Enemies(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.pos)
         self.direction = Vector2(self.pos)
 
-        self.sprite_groups.camera_group.add(shield := Guardian(
-            dir_path="images/guards/guard2",
-            speed_frames=0.09,
-            scale_value=(1, 1),
-            loops=-1,
-            guard_level=randint(3, 10),
-            size=self.rect.size,
-            angle=self.angle,
-            owner=self
-        ))
+        self.sprite_groups.camera_group.add(
+            shield := Guardian(
+                types=2,
+                size=self.rect.size,
+                angle=self.angle,
+                owner=self
+                )
+            )
         self.sprite_groups.enemies_guard_group.add(shield)
 
         self.prepare_weapon(0)
@@ -115,16 +112,16 @@ class Enemies(Sprite):
         self.rect = self.image_rotation.get_rect(center=self.rect.center)
 
     def random_value(self):
-        self.speed = randint(0, 5)
-        self.direction_list = [0, 1, -1]
-        self.move_count = randint(0, 600)
-        self.permission_shot = uniform(1, 3)
+        self.speed = randint(ENEMY['speed'][0], ENEMY['speed'][1])
+        self.direction_list = ENEMY['direction_list']
+        self.move_counter = uniform(ENEMY['move_counter'][0], ENEMY['move_counter'][1])
+        self.permission_shot = uniform(ENEMY['permission_shot'][0], ENEMY['permission_shot'][1])
+        self.move_time = time()
 
     def check_move_count(self):
-        if self.move_count <= 0:
+        if time() - self.move_time >=  self.move_counter:
             self.random_value()
-        else:
-            self.move_count -= 1
+            self.change_direction()
 
     def change_direction(self):
         self.moveX = choice(self.direction_list)
@@ -166,14 +163,10 @@ class Enemies(Sprite):
                     for pos in value:
                         self.sprite_groups.camera_group.add(shot:=
                             Shots(
-                                pos=(pos),
-                                screen=screen,
-                                speed=8,
+                                types=1,
                                 angle=self.angle,
-                                kill_shot_distance=2000,
-                                color="yellow",
-                                image="images/rockets/shot1.png",
                                 scale_value=0.08,
+                                pos=(pos),
                                 owner=self
                             )
                         )
